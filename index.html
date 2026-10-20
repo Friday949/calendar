@@ -26,8 +26,9 @@
   .num { font-size:3.2vh; font-weight:700; color:var(--dim); line-height:1; margin-bottom:0.4vh; }
   .today .num { color:var(--today); }
   .ev { flex:1 1 0; min-height:0; max-height:4.6vh; margin-top:0.35vh; padding:0 0.5vw; border-radius:4px;
-    color:#101317; font-weight:700; font-size:var(--evsize,2.8vh); line-height:1; display:flex; align-items:center;
+    color:#101317; font-weight:700; font-size:2.8vh; line-height:1; display:flex; align-items:center;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ev span { flex:none; white-space:nowrap; }
   #status { position:fixed; right:1vw; bottom:0.5vh; font-size:1.8vh; color:var(--dim); }
 </style>
 </head>
@@ -165,7 +166,7 @@ function render() {
         var list = (events[key(d)] || []).slice().sort(function (a, b) { return pressNum(a.press) - pressNum(b.press); });
         var j;
         for (j = 0; j < list.length; j++) {
-          html += '<div class="ev" style="background:' + colorFor(list[j].press) + '">' + esc(pressTag(list[j].press)) + "&nbsp;" + esc(list[j].label) + "</div>";
+          html += '<div class="ev" style="background:' + colorFor(list[j].press) + '">' + "<span>" + esc(pressTag(list[j].press)) + "&nbsp;" + esc(list[j].label) + "</span></div>";
         }
       }
       html += "</div>";
@@ -175,7 +176,21 @@ function render() {
   var g = document.getElementById("grid");
   g.style.gridTemplateRows = "auto repeat(" + weeks + ", 1fr)";
   g.innerHTML = html;
+  fitText();
 }
+
+// Shrinks long entries so they fit on one line (never below 55% of normal size)
+function fitText() {
+  var els = document.getElementById("grid").getElementsByClassName("ev"), i;
+  for (i = 0; i < els.length; i++) {
+    var el = els[i], span = el.firstChild; el.style.fontSize = ""; var cs = window.getComputedStyle(el);
+    var size = parseFloat(cs.fontSize), min = size * 0.55;
+    var avail = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    while (span.offsetWidth > avail && size > min) { size -= 0.5; el.style.fontSize = size + "px"; }
+  }
+}
+window.onresize = fitText;
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitText);
 
 function load() {
   if (!CSV_URL) { events = buildEvents(demoData()); render(); return; }
