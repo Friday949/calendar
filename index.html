@@ -42,11 +42,11 @@
 <script>
 // ===== SETTINGS: edit these =====
 var CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH5ZRIgszO3TFfN-GeVeZ03PF5Nwhu5Az4483itlnK6LfaRSN6jPdilrXUal03W6qateMjWvKd4VrZ/pub?output=csv";            // paste your Google Sheet "Publish to web" CSV link here (leave empty to see demo data)
-var SECONDS_PER_MONTH = 5;  // how long each month stays on screen
+var SECONDS_PER_MONTH = 6;  // how long each month stays on screen
 var MONTHS_TO_SHOW = 2;      // current month plus the next 2
 var REFRESH_MINUTES = 1;     // how often to re-read the sheet
-var PRESS_NAMES = ["EF1", "EF2", "EF3", "EF4", "FA26"]; // your 5 press names, in order
-var PRESS_COLORS = ["#f5b82e", "#3ec1d3", "#ff7a59", "#8bd450", "#c58bff"]; // presses 1 to 5
+var PRESS_NAMES = ["EF1", "EF2", "EF3", "EF4", "FA26", "P5"]; // your press names, in order
+var PRESS_COLORS = ["#f5b82e", "#3ec1d3", "#ff7a59", "#8bd450", "#c58bff", "#ff6fb1"]; // one color per press, same order as the names
 // =================================
 
 var MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -108,7 +108,7 @@ function buildEvents(rows) {
       var k = key(span[j]);
       (out[k] = out[k] || []).push({
         press: press,
-        label: label + (span.length > 1 ? " (" + (j + 1) + "/" + span.length + ")" : "")
+        label: label
       });
     }
   }
@@ -166,7 +166,7 @@ function render() {
         var list = (events[key(d)] || []).slice().sort(function (a, b) { return pressNum(a.press) - pressNum(b.press); });
         var j;
         for (j = 0; j < list.length; j++) {
-          html += '<div class="ev" style="background:' + colorFor(list[j].press) + '">' + "<span>" + esc(pressTag(list[j].press)) + "&nbsp;" + esc(list[j].label) + "</span></div>";
+          html += '<div class="ev" style="background:' + colorFor(list[j].press) + '">' + "<span>" + esc(pressTag(list[j].press)) + "&nbsp;-&nbsp;" + esc(list[j].label) + "</span></div>";
         }
       }
       html += "</div>";
