@@ -29,6 +29,9 @@
     color:#101317; font-weight:700; font-size:2.8vh; line-height:1; display:flex; align-items:center;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .ev span { flex:none; white-space:nowrap; }
+  .day.closed { background:repeating-linear-gradient(45deg,#1b1f26 0 1.2vh,#23282f 1.2vh 2.4vh); }
+  .closed-label { flex:1; display:flex; align-items:center; justify-content:center; text-align:center;
+    font-size:3.4vh; font-weight:700; color:var(--dim); }
   #status { position:fixed; right:1vw; bottom:0.5vh; font-size:1.8vh; color:var(--dim); }
 </style>
 </head>
@@ -47,6 +50,7 @@ var MONTHS_TO_SHOW = 1;      // current month plus the next 2
 var REFRESH_MINUTES = 1;     // how often to re-read the sheet
 var PRESS_NAMES = ["EF1", "EF2", "EF3", "EF4", "FA26", "P5"]; // your press names, in order
 var PRESS_COLORS = ["#f5b82e", "#3ec1d3", "#ff7a59", "#8bd450", "#c58bff", "#ff6fb1"]; // one color per press, same order as the names
+var CLOSED_DAYS = { "2026-11-26": "Thanksgiving", "2026-11-27": "Thanksgiving" }; // days off: "YYYY-MM-DD": "label", separated by commas
 // =================================
 
 var MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -56,6 +60,7 @@ var step = 0;
 var lastText = null, pendingText = null;
 
 function key(d) { return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); }
+function isoKey(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
 function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
 function parseDate(s) {
@@ -159,11 +164,13 @@ function render() {
     for (i = 0; i < 5; i++) {
       var d = new Date(wk.getFullYear(), wk.getMonth(), wk.getDate() + i);
       var inMonth = d.getMonth() === first.getMonth();
-      var cls = "day" + (inMonth ? "" : " off") + (inMonth && d < t0 ? " past" : "") + (inMonth && d.getTime() === t0.getTime() ? " today" : "");
+      var closed = inMonth ? CLOSED_DAYS[isoKey(d)] : null;
+      var cls = "day" + (inMonth ? "" : " off") + (closed ? " closed" : "") + (inMonth && d < t0 ? " past" : "") + (inMonth && d.getTime() === t0.getTime() ? " today" : "");
       html += '<div class="' + cls + '">';
       if (inMonth) {
         html += '<div class="num">' + d.getDate() + "</div>";
-        var list = (events[key(d)] || []).slice().sort(function (a, b) { return pressNum(a.press) - pressNum(b.press); });
+        if (closed) html += '<div class="closed-label">Closed<br>' + esc(closed) + "</div>";
+        var list = closed ? [] : (events[key(d)] || []).slice().sort(function (a, b) { return pressNum(a.press) - pressNum(b.press); });
         var j;
         for (j = 0; j < list.length; j++) {
           html += '<div class="ev" style="background:' + colorFor(list[j].press) + '">' + "<span>" + esc(pressTag(list[j].press)) + "&nbsp;-&nbsp;" + esc(list[j].label) + "</span></div>";
