@@ -19,18 +19,18 @@
   #grid { flex:1; display:grid; grid-template-columns:repeat(5,1fr); gap:0.5vh 0.4vw; min-height:0; }
   .dow { font-size:3vh; font-weight:700; color:var(--dim); padding:0 0.6vw; }
   .day { background:var(--cell); border-radius:6px; padding:0.5vh 0.5vw; min-height:0; overflow:hidden;
-    display:flex; flex-direction:column; }
+    display:flex; flex-direction:column; position:relative; }
   .day.off { background:var(--off); }
-  .day.past { opacity:0.45; }
+  .day.past { opacity:0.25; }
   .day.today { outline:0.5vh solid var(--today); outline-offset:-0.5vh; }
   .num { font-size:3.2vh; font-weight:700; color:var(--dim); line-height:1; margin-bottom:0.4vh; }
   .today .num { color:var(--today); }
   .ev { flex:1 1 0; min-height:0; max-height:4.6vh; margin-top:0.35vh; padding:0 0.5vw; border-radius:4px;
-    color:#101317; font-weight:700; font-size:2.8vh; line-height:1; display:flex; align-items:center;
+    color:#101317; font-weight:700; font-size:2.8vh; line-height:1; display:flex; align-items:center; justify-content:center; justify-content:safe center; text-align:center;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .ev span { flex:none; white-space:nowrap; }
   .day.closed { background:repeating-linear-gradient(45deg,#1b1f26 0 1.2vh,#23282f 1.2vh 2.4vh); }
-  .closed-label { flex:1; display:flex; align-items:center; justify-content:center; text-align:center;
+  .closed-label { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center;
     font-size:3.4vh; font-weight:700; color:var(--dim); }
   #status { position:fixed; right:1vw; bottom:0.5vh; font-size:1.8vh; color:var(--dim); }
 </style>
@@ -46,11 +46,11 @@
 // ===== SETTINGS: edit these =====
 var CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH5ZRIgszO3TFfN-GeVeZ03PF5Nwhu5Az4483itlnK6LfaRSN6jPdilrXUal03W6qateMjWvKd4VrZ/pub?output=csv";            // paste your Google Sheet "Publish to web" CSV link here (leave empty to see demo data)
 var SECONDS_PER_MONTH = 6;  // how long each month stays on screen
-var MONTHS_TO_SHOW = 2;      // current month plus the next 2
+var MONTHS_TO_SHOW = 1;      // current month plus the next 2
 var REFRESH_MINUTES = 1;     // how often to re-read the sheet
 var PRESS_NAMES = ["EF1", "EF2", "EF3", "EF4", "FA26", "P5"]; // your press names, in order
 var PRESS_COLORS = ["#f5b82e", "#3ec1d3", "#ff7a59", "#8bd450", "#c58bff", "#ff6fb1"]; // one color per press, same order as the names
-var CLOSED_DAYS = { "2026-11-26": "Thanksgiving", "2026-11-27": "Black Friday" }; // days off: "YYYY-MM-DD": "label", separated by commas
+var CLOSED_DAYS = { "2026-11-26": "Thanksgiving", "2026-11-27": "Thanksgiving", "2026-12-24": "Christmas Eve", "2026-12-25": "Christmas Day" }; // days off: "YYYY-MM-DD": "label", separated by commas
 // =================================
 
 var MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
